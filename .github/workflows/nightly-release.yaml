@@ -16,11 +16,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
         
-      - name: Get Short SHA
-        id: get_short_sha
-        run: |
-          SHORT_SHA=$(git rev-parse --short ${{ github.sha }})
-          echo "SHORT_SHA=$SHORT_SHA" >> $GITHUB_ENV
+      - name: Generate short SHA
+        id: short-sha
+        uses: benjlevesque/short-sha@v3.0
+        with:
+          length: 7  # Desired length of the short SHA
         
       - name: Sync upstream changes
         id: sync
@@ -122,8 +122,8 @@ jobs:
       - name: Upload Release Assets
         uses: softprops/action-gh-release@v2
         with:
-          name: ${{ env.SHORT_SHA }}
-          tag_name: ${{ env.SHORT_SHA }}
+          name: ${{ env.SHA }}
+          tag_name: ${{ env.SHA }}
           token: ${{ github.token }}
           files: ./**/*
           draft: false
