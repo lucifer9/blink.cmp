@@ -26,12 +26,15 @@ jobs:
       - name: Check for changes
         id: check_changes
         run: |
-          git fetch upstream main
-          if [ "$(git rev-parse HEAD)" != "$(git rev-parse upstream/main)" ]; then
-            echo "::set-output name=changes_pulled::true"
+          UPSTREAM_STATUS=$(git rev-list --left-right --count HEAD...upstream/main)
+          BEHIND=$(echo $UPSTREAM_STATUS | cut -f2)
+          if [ "$BEHIND" -ne "0" ]; then
+            echo "Merging changes from upstream/main..."
+            echo "changes_pulled=true"  >> "$GITHUB_OUTPUT"
             git merge upstream/main
           else
-            echo "::set-output name=changes_pulled::false"
+            echo "No changes to merge from upstream/main."
+            echo "changes_pulled=false"  >> "$GITHUB_OUTPUT"
           fi
 
       - name: Push changes
