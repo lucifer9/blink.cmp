@@ -4,7 +4,8 @@ on:
   schedule:
     - cron: '0 * * * *' # Runs every hour
   workflow_dispatch: # Allows manual triggering
-
+permissions:
+  contents: write
 jobs:
   sync:
     name: Sync with upstream
@@ -13,39 +14,24 @@ jobs:
       changes_pulled: ${{ steps.check_changes.outputs.changes_pulled }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
+        
+      - name: Sync upstream changes
+        id: sync
+        uses: aormsby/Fork-Sync-With-Upstream-action@v3.4.1
         with:
-          fetch-depth: 0 # Fetch all history for all branches and tags
+          upstream_sync_repo: Saghen/blink.cmp
+          upstream_sync_branch: main
+          target_sync_branch: main
+          target_repo_token: ${{ secrets.GITHUB_TOKEN }} # automatically generated, no need to set
 
-      - name: Add upstream remote
-        run: git remote add upstream https://github.com/Saghen/blink.cmp
-
-      - name: Fetch upstream
-        run: git fetch upstream
-
-      - name: Check for changes
-        id: check_changes
-        run: |
-          UPSTREAM_STATUS=$(git rev-list --left-right --count HEAD...upstream/main)
-          BEHIND=$(echo $UPSTREAM_STATUS | cut -f2 | xargs)
-          if [[ "$BEHIND" != "0" ]]; then
-            echo "Merging changes from upstream/main..."
-            echo "changes_pulled=true"  >> "$GITHUB_OUTPUT"
-            git merge upstream/main
-          else
-            echo "No changes to merge from upstream/main."
-            echo "changes_pulled=false"  >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Push changes
-        if: steps.check_changes.outputs.changes_pulled == 'true'
-        run: |
-          git push origin main
+          # Set test_mode true to run tests instead of the true action!!
+          test_mode: false
   build:
     name: Build ${{ matrix.target }}
     runs-on: ${{ matrix.os }}
     needs: sync
-    if: needs.sync.outputs.changes_pulled == 'true' || github.event_name == 'workflow_dispatch'
+    if: needs.sync.steps.sync.outputs.has_new_commits == 'true' || github.event_name == 'workflow_dispatch'
     permissions:
       contents: read
     strategy:
@@ -120,7 +106,7 @@ jobs:
     name: Release
     needs: build
     runs-on: ubuntu-latest
-    if: needs.sync.outputs.changes_pulled == 'true' || github.event_name == 'workflow_dispatch'
+    if: needs.sync.steps.sync.outputs.has_new_commits == 'true' || github.event_name == 'workflow_dispatch'
     permissions:
       contents: write
     steps:
