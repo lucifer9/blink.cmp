@@ -27,8 +27,8 @@ jobs:
         id: check_changes
         run: |
           UPSTREAM_STATUS=$(git rev-list --left-right --count HEAD...upstream/main)
-          BEHIND=$(echo $UPSTREAM_STATUS | cut -f2)
-          if [ "$BEHIND" -gt 0 ]; then
+          BEHIND=$(echo $UPSTREAM_STATUS | cut -f2 | xargs)
+          if [[ "$BEHIND" != "0" ]]; then
             echo "Merging changes from upstream/main..."
             echo "changes_pulled=true"  >> "$GITHUB_OUTPUT"
             git merge upstream/main
