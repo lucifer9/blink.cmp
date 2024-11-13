@@ -1,0 +1,29 @@
+name: Sync Upstream
+
+on:
+  schedule:
+    - cron: '0 * * * *' # Runs every hour
+  workflow_dispatch: # Allows manual triggering
+permissions:
+  contents: write
+jobs:
+  sync:
+    name: Sync with upstream
+    runs-on: ubuntu-latest
+    outputs:
+      changes_pulled: ${{ steps.check_changes.outputs.changes_pulled }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        
+      - name: Sync upstream changes
+        id: sync
+        uses: aormsby/Fork-Sync-With-Upstream-action@v3.4.1
+        with:
+          upstream_sync_repo: Saghen/blink.cmp
+          upstream_sync_branch: main
+          target_sync_branch: main
+          target_repo_token: ${{ secrets.GITHUB_TOKEN }} # automatically generated, no need to set
+
+          # Set test_mode true to run tests instead of the true action!!
+          test_mode: false
