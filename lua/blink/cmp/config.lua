@@ -13,12 +13,15 @@
 --- | 'snippet_forward' Move the cursor forward to the next snippet placeholder
 --- | 'snippet_backward' Move the cursor backward to the previous snippet placeholder
 --- | (fun(cmp: table): boolean?) Custom function where returning true will prevent the next command from running
----
---- @alias blink.cmp.KeymapConfig
---- | table<string, blink.cmp.KeymapCommand[]> Table of keys => commands[]
+
+--- @alias blink.cmp.KeymapPreset
 --- | 'default' mappings similar to built-in completion
 --- | 'super-tab' mappings similar to vscode (tab to accept, arrow keys to navigate)
 --- | 'enter' mappings similar to 'super-tab' but with 'enter' to accept
+
+--- @class blink.cmp.KeymapConfig
+--- @field preset? blink.cmp.KeymapPreset
+--- @field [string]? blink.cmp.KeymapCommand[]> Table of keys => commands[]
 
 --- @class blink.cmp.AcceptConfig
 --- @field expand_snippet? fun(string)
@@ -28,7 +31,7 @@
 --- @class blink.cmp.AutoBracketsConfig
 --- @field enabled? boolean
 --- @field default_brackets? string[]
---- @field override_brackets_for_filetypes? table<string, string[] | function(item: blink.cmp.CompletionItem): string[]>
+--- @field override_brackets_for_filetypes? table<string, string[] | fun(item: blink.cmp.CompletionItem): string[]>
 --- @field force_allow_filetypes? string[] Overrides the default blocked filetypes
 --- @field blocked_filetypes? string[]
 --- @field kind_resolution? blink.cmp.AutoBracketResolutionConfig Synchronously use the kind of the item to determine if brackets should be added
@@ -69,7 +72,7 @@
 --- @field enabled_providers? string[] | fun(ctx?: blink.cmp.Context): string[]
 ---
 --- @class blink.cmp.SourceProviderConfig
---- @field name? string
+--- @field name string
 --- @field module? string
 --- @field enabled? boolean | fun(ctx?: blink.cmp.Context): boolean
 --- @field opts? table
@@ -136,6 +139,7 @@
 --- @alias blink.cmp.WindowBorder 'single' | 'double' | 'rounded' | 'solid' | 'shadow' | 'padded' | 'none' | blink.cmp.WindowBorderChar[]
 ---
 --- @class blink.cmp.DocumentationConfig
+--- @field min_width? number
 --- @field max_width? number
 --- @field max_height? number
 --- @field desired_min_width? number
@@ -163,7 +167,7 @@
 --- @field enabled? boolean
 
 --- @class blink.cmp.Config
---- @field keymap? blink.cmp.KeymapConfig | 'default' | 'super-tab'
+--- @field keymap? blink.cmp.KeymapConfig | blink.cmp.KeymapPreset
 --- @field accept? blink.cmp.AcceptConfig
 --- @field trigger? blink.cmp.TriggerConfig
 --- @field fuzzy? blink.cmp.FuzzyConfig
