@@ -37,6 +37,8 @@ jobs:
     name: Build ${{ matrix.target }}
     runs-on: ${{ matrix.os }}
     needs: sync
+    outputs: 
+      short_sha: ${{ needs.sync.outputs.short_sha }}
     if: needs.sync.steps.sync.outputs.has_new_commits == 'true' || github.event_name == 'workflow_dispatch'
     permissions:
       contents: read
@@ -122,8 +124,8 @@ jobs:
       - name: Upload Release Assets
         uses: softprops/action-gh-release@v2
         with:
-          name: ${{ env.SHA }}
-          tag_name: ${{ env.SHA }}
+          name: ${{ needs.build.outputs.short_sha }}
+          tag_name: ${{ needs.build.outputs.short_sha }}
           token: ${{ github.token }}
           files: ./**/*
           draft: false
