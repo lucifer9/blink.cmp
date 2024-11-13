@@ -18,7 +18,9 @@ jobs:
         
       - name: Get Short SHA
         id: get_short_sha
-        run: echo "SHORT_SHA=$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_ENV
+        run: |
+          SHORT_SHA=$(git rev-parse --short ${{ github.sha }})
+          echo "SHORT_SHA=$SHORT_SHA" >> $GITHUB_ENV
         
       - name: Sync upstream changes
         id: sync
@@ -120,8 +122,8 @@ jobs:
       - name: Upload Release Assets
         uses: softprops/action-gh-release@v2
         with:
-          name: $SHORT_SHA
-          tag_name: $SHORT_SHA
+          name: ${{ env.SHORT_SHA }}
+          tag_name: ${{ env.SHORT_SHA }}
           token: ${{ github.token }}
           files: ./**/*
           draft: false
