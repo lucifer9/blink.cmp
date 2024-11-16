@@ -79,7 +79,7 @@
 --  With blink.cmp, Neovim has *more* capabilities which are communicated to the LSP servers.
 --  Explanation from TJ: https://youtu.be/m8C0Cq9Uv9o?t=1275
 --
--- This can vary by config, but in-general for nvim-lspconfig:
+-- This can vary by config, but in general for nvim-lspconfig:
 
 {
   'neovim/nvim-lspconfig',
@@ -506,6 +506,9 @@ MiniDeps.add({
       auto_show = false,
       auto_show_delay_ms = 500,
       update_delay_ms = 50,
+      -- whether to use treesitter highlighting, disable if you run into performance issues
+      -- WARN: temporary, eventually blink will support regex highlighting
+      treesitter_highlighting = true,
     },
     signature_help = {
       min_width = 1,
@@ -520,6 +523,9 @@ MiniDeps.add({
       -- which directions to show the window,
       -- falling back to the next direction when there's not enough space
       direction_priority = { 'n', 's' },
+      -- whether to use treesitter highlighting, disable if you run into performance issues
+      -- WARN: temporary, eventually blink will support regex highlighting
+      treesitter_highlighting = true,
     },
     ghost_text = {
       enabled = false,
